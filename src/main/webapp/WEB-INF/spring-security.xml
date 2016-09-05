@@ -1,0 +1,62 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+    <!-- auto-config = true se tu dong tao ra trang login-->
+    <!--<http auto-config="true" >-->
+    <!--<intercept-url pattern="/admin**" access="ROLE_USER"/>-->
+    <!-- -->
+    <!--</http>-->
+
+    <http auto-config="false" use-expressions="true" access-denied-page="/denied">
+
+        <intercept-url pattern="/admin**" access="hasRole('ROLE_ADMIN')"/>
+        <intercept-url pattern="/main" access="isAuthenticated()"/>
+        <intercept-url pattern="/user" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/home" access="permitAll"/>
+        <intercept-url pattern="/login" access="permitAll"/>
+        <intercept-url pattern="/denied" access="permitAll"/>
+        <intercept-url pattern="/" access="permitAll"/>
+        <intercept-url pattern="/*" access="denyAll"/>
+        <!--<form-login login-page="/login" login-processing-url="/j_spring_security_check"-->
+                     <!--username-parameter="username" password-parameter="password"-->
+                     <!--authentication-failure-url="/login?error" default-target-url="/admin"-->
+                     <!--always-use-default-target="false"/>-->
+        <!-- add custom handlers -->
+        <form-login login-page="/login" login-processing-url="/j_spring_security_check"
+                    username-parameter="username" password-parameter="password"
+
+                    authentication-success-handler-ref="loginSuccessHandler"
+                    authentication-failure-handler-ref="loginFailureHandler"
+                    always-use-default-target="false" />
+        <logout logout-url="/logout" logout-success-url="/login"></logout>
+    </http>
+
+
+    <authentication-manager>
+        <authentication-provider user-service-ref="plainUserServiceImpl" >
+            <password-encoder ref="standardPasswordEncoder"></password-encoder>
+            <!--<authentication-provider >-->
+            <!--<user-service>-->
+            <!--<user name="hvcntt" password="123456" authorities="ROLE_USER" />-->
+            <!--</user-service>-->
+
+        </authentication-provider>
+    </authentication-manager>
+    <beans:bean id="standardPasswordEncoder" class="org.springframework.security.crypto.password.StandardPasswordEncoder">
+
+    </beans:bean>
+    <beans:bean id="plainUserServiceImpl" class="com.github.hvcntt.service.user.UserServiceImpl"></beans:bean>
+    <beans:bean id="encodedUserServiceImpl" class="com.github.hvcntt.service.user.EncodedUserServiceImpl"></beans:bean>
+
+    <beans:bean id="loginSuccessHandler" class="com.github.hvcntt.security.LoginSuccessHandler">
+        <beans:property name="defaultTargetUrl" value="/main"></beans:property>
+    </beans:bean>
+    <beans:bean id="loginFailureHandler" class="com.github.hvcntt.security.LoginFailureHandler">
+        <beans:property name="defaultFailureUrl" value="/login"/>
+    </beans:bean>
+</beans:beans>
