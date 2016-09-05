@@ -12,7 +12,7 @@
     <!-- -->
     <!--</http>-->
 
-    <http auto-config="false" use-expressions="true" access-denied-page="/denied">
+    <http auto-config="true" use-expressions="true" access-denied-page="/denied">
 
         <intercept-url pattern="/admin**" access="hasRole('ROLE_ADMIN')"/>
         <intercept-url pattern="/main" access="isAuthenticated()"/>
@@ -38,7 +38,7 @@
 
 
     <authentication-manager>
-        <authentication-provider user-service-ref="plainUserServiceImpl" >
+        <authentication-provider user-service-ref="encodedUserServiceImpl" >
             <password-encoder ref="standardPasswordEncoder"></password-encoder>
             <!--<authentication-provider >-->
             <!--<user-service>-->
